@@ -1,0 +1,34 @@
+# The "agreed minimum" a partner catalogue must meet to be indexed as conformant.
+# Changing this file IS the metadata-governance conversation, made concrete.
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix ex:   <https://example.org/digilab/shapes#> .
+
+ex:DatasetShape a sh:NodeShape ;
+  sh:targetClass dcat:Dataset ;
+  sh:property [ sh:path dct:title ;        sh:minCount 1 ; sh:message "Dataset needs a title" ] ;
+  sh:property [ sh:path dct:description ;  sh:minCount 1 ; sh:message "Dataset needs a description" ] ;
+  sh:property [ sh:path dct:publisher ;    sh:minCount 1 ; sh:message "Dataset needs a publisher" ] ;
+  sh:property [ sh:path dct:license ;      sh:minCount 1 ; sh:message "Dataset needs a licence" ] ;
+  sh:property [ sh:path dcat:distribution ; sh:minCount 1 ; sh:message "Dataset needs at least one distribution" ] ;
+  sh:property [ sh:path odrl:hasPolicy ;   sh:minCount 1 ; sh:class odrl:Offer ;
+                sh:message "Dataset needs a machine-readable ODRL offer" ] .
+
+ex:OfferShape a sh:NodeShape ;
+  sh:targetClass odrl:Offer ;
+  sh:property [ sh:path odrl:assigner ; sh:minCount 1 ; sh:message "Offer needs an assigner" ] .
+
+@prefix schema: <http://schema.org/> .
+
+# Software published as a catalogue resource (DCAT 3 dcat:Resource + schema:SoftwareSourceCode).
+ex:SoftwareShape a sh:NodeShape ;
+  sh:targetClass schema:SoftwareSourceCode ;
+  sh:property [ sh:path dct:title ;             sh:minCount 1 ; sh:message "Software needs a title" ] ;
+  sh:property [ sh:path dct:description ;       sh:minCount 1 ; sh:message "Software needs a description" ] ;
+  sh:property [ sh:path dct:publisher ;         sh:minCount 1 ; sh:message "Software needs a publisher" ] ;
+  sh:property [ sh:path dct:license ;           sh:minCount 1 ; sh:message "Software needs a licence" ] ;
+  sh:property [ sh:path schema:codeRepository ; sh:minCount 1 ; sh:message "Software needs a code repository" ] ;
+  sh:property [ sh:path odrl:hasPolicy ;        sh:minCount 1 ; sh:class odrl:Offer ;
+                sh:message "Software needs a machine-readable ODRL offer" ] .

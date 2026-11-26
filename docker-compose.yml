@@ -1,0 +1,52 @@
+# DigiLab metadata catalogue demo — DCAT-AP + ODRL, harvested and federated.
+#
+#   docker compose up --build
+#   DigiLab catalogue (UI) ..... http://localhost:8000
+#   Standards & mappings ....... http://localhost:8000/standards
+#   API (OpenAPI docs) ......... http://localhost:8000/docs
+#   Partner sites .............. http://localhost:8080   (each: /<partner>/ and /<partner>/catalog.jsonld)
+#
+# Re-harvest after editing a partner catalogue:  docker compose run --rm harvester
+#   (or POST http://localhost:8000/api/harvest). Register a new one from the UI or POST /api/sources.
+
+x-app-env: &app-env
+  PARTNER_BASE: http://partners                 # how the catalogue reaches partner sites (inside compose)
+  PARTNER_PUBLIC_BASE: http://localhost:8080    # how browsers reach them (used in links)
+  SOURCES: /config/sources.json                 # catalogues harvested from the start
+  SHAPES: /config/shapes/dcat-odrl-min.ttl      # the agreed metadata minimum (SHACL)
+  VOCAB: /config/vocab.json                     # term -> concept links (stand-in for the Vocabulary Hub)
+  DATA_DIR: /data                               # index.parquet, harvest report, registered catalogues
+
+services:
+  # Each partner = a static site with one DCAT+ODRL file. In reality: their own web server or S3 bucket.
+  partners:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./partners:/usr/share/nginx/html:ro
+      - ./config/nginx-partners.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8080:80"
+
+  # One-shot job: fetch -> SHACL check -> Parquet index.
+  harvester:
+    build: ./app
+    command: python -m catalog.harvest
+    environment: *app-env
+    volumes:
+      - ./config:/config:ro
+      - ./data:/data
+    depends_on:
+      - partners
+
+  # Catalogue UI + API. mode=index reads the Parquet index; mode=live queries partner sites directly.
+  api:
+    build: ./app
+    environment: *app-env
+    volumes:
+      - ./config:/config:ro
+      - ./data:/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      harvester:
+        condition: service_completed_successfully

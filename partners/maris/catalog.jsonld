@@ -1,0 +1,163 @@
+{
+  "@context": {
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "http://schema.org/",
+    "schema:unitCode": {
+      "@type": "@id"
+    },
+    "schema:codeRepository": {
+      "@type": "@id"
+    },
+    "dct:relation": {
+      "@type": "@id"
+    },
+    "schema:isBasedOn": {
+      "@type": "@id"
+    },
+    "dcat:resource": {
+      "@container": "@set"
+    },
+    "schema:propertyID": {
+      "@type": "@id"
+    },
+    "dcat:dataset": {
+      "@container": "@set"
+    },
+    "dcat:theme": {
+      "@type": "@id"
+    },
+    "dct:spatial": {
+      "@type": "@id"
+    },
+    "dct:license": {
+      "@type": "@id"
+    },
+    "dcat:landingPage": {
+      "@type": "@id"
+    },
+    "dcat:downloadURL": {
+      "@type": "@id"
+    },
+    "dcat:accessURL": {
+      "@type": "@id"
+    },
+    "dct:conformsTo": {
+      "@type": "@id"
+    },
+    "odrl:action": {
+      "@type": "@id"
+    },
+    "odrl:leftOperand": {
+      "@type": "@id"
+    },
+    "odrl:operator": {
+      "@type": "@id"
+    },
+    "dct:modified": {
+      "@type": "xsd:date"
+    },
+    "dcat:startDate": {
+      "@type": "xsd:date"
+    },
+    "dcat:endDate": {
+      "@type": "xsd:date"
+    }
+  },
+  "@id": "https://partners.example/maris/catalog",
+  "@type": "dcat:Catalog",
+  "dct:title": "MARIS data catalogue (mock)",
+  "dct:publisher": {
+    "@id": "https://partners.example/maris",
+    "@type": "foaf:Agent",
+    "foaf:name": "MARIS"
+  },
+  "dcat:dataset": [
+    {
+      "@id": "https://partners.example/maris/dataset/north-sea-water-quality",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "north-sea-water-quality",
+      "dct:title": "North Sea water quality monitoring (mock)",
+      "dct:description": "Sea water temperature, salinity and nutrients from Dutch North Sea monitoring stations, aggregated monthly.",
+      "dcat:keyword": [
+        "sea water",
+        "temperature",
+        "salinity",
+        "water quality",
+        "marine"
+      ],
+      "dcat:theme": [
+        "http://publications.europa.eu/resource/authority/data-theme/ENVI"
+      ],
+      "dct:spatial": "http://publications.europa.eu/resource/authority/country/NLD",
+      "dct:temporal": {
+        "@type": "dct:PeriodOfTime",
+        "dcat:startDate": "2000-01-01",
+        "dcat:endDate": "2026-09-30"
+      },
+      "dct:modified": "2026-10-15",
+      "dct:license": "https://creativecommons.org/licenses/by/4.0/",
+      "dcat:distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "dct:license": "https://creativecommons.org/licenses/by/4.0/",
+          "dcat:mediaType": {
+            "@id": "https://www.iana.org/assignments/media-types/text/csv"
+          },
+          "dcat:downloadURL": "https://partners.example/maris/files/north-sea-wq.csv"
+        }
+      ],
+      "odrl:hasPolicy": {
+        "@id": "https://partners.example/maris/policy/north-sea-water-quality",
+        "@type": "odrl:Offer",
+        "odrl:assigner": {
+          "@id": "https://partners.example/maris"
+        },
+        "odrl:permission": [
+          {
+            "odrl:action": "odrl:use",
+            "odrl:constraint": [
+              {
+                "odrl:leftOperand": "odrl:purpose",
+                "odrl:operator": "odrl:isAnyOf",
+                "odrl:rightOperand": [
+                  "research",
+                  "public-task"
+                ]
+              }
+            ],
+            "odrl:duty": [
+              {
+                "odrl:action": "odrl:attribute"
+              }
+            ]
+          },
+          {
+            "odrl:action": "odrl:use",
+            "odrl:constraint": [
+              {
+                "odrl:leftOperand": "odrl:purpose",
+                "odrl:operator": "odrl:eq",
+                "odrl:rightOperand": "commercial"
+              }
+            ],
+            "odrl:duty": [
+              {
+                "odrl:action": "odrl:attribute"
+              },
+              {
+                "odrl:action": "odrl:compensate"
+              }
+            ]
+          }
+        ]
+      },
+      "dct:publisher": {
+        "@id": "https://partners.example/maris"
+      }
+    }
+  ]
+}

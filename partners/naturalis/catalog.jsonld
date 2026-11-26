@@ -1,0 +1,296 @@
+{
+  "@context": {
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "http://schema.org/",
+    "schema:unitCode": {
+      "@type": "@id"
+    },
+    "schema:codeRepository": {
+      "@type": "@id"
+    },
+    "dct:relation": {
+      "@type": "@id"
+    },
+    "schema:isBasedOn": {
+      "@type": "@id"
+    },
+    "dcat:resource": {
+      "@container": "@set"
+    },
+    "schema:propertyID": {
+      "@type": "@id"
+    },
+    "dcat:dataset": {
+      "@container": "@set"
+    },
+    "dcat:theme": {
+      "@type": "@id"
+    },
+    "dct:spatial": {
+      "@type": "@id"
+    },
+    "dct:license": {
+      "@type": "@id"
+    },
+    "dcat:landingPage": {
+      "@type": "@id"
+    },
+    "dcat:downloadURL": {
+      "@type": "@id"
+    },
+    "dcat:accessURL": {
+      "@type": "@id"
+    },
+    "dct:conformsTo": {
+      "@type": "@id"
+    },
+    "odrl:action": {
+      "@type": "@id"
+    },
+    "odrl:leftOperand": {
+      "@type": "@id"
+    },
+    "odrl:operator": {
+      "@type": "@id"
+    },
+    "dct:modified": {
+      "@type": "xsd:date"
+    },
+    "dcat:startDate": {
+      "@type": "xsd:date"
+    },
+    "dcat:endDate": {
+      "@type": "xsd:date"
+    }
+  },
+  "@id": "https://partners.example/naturalis/catalog",
+  "@type": "dcat:Catalog",
+  "dct:title": "Naturalis Biodiversity Center data catalogue (mock)",
+  "dct:publisher": {
+    "@id": "https://partners.example/naturalis",
+    "@type": "foaf:Agent",
+    "foaf:name": "Naturalis Biodiversity Center"
+  },
+  "dcat:dataset": [
+    {
+      "@id": "https://partners.example/naturalis/dataset/sensitive-species-precise",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "sensitive-species-precise",
+      "dct:title": "Occurrences of sensitive species, precise coordinates (mock)",
+      "dct:description": "Georeferenced occurrence records of sensitive species in the Netherlands. Metadata is open; the payload is restricted.",
+      "dcat:keyword": [
+        "biodiversity",
+        "occurrences",
+        "sensitive species",
+        "Darwin Core"
+      ],
+      "dcat:theme": [
+        "http://publications.europa.eu/resource/authority/data-theme/ENVI"
+      ],
+      "dct:spatial": "http://publications.europa.eu/resource/authority/country/NLD",
+      "dct:temporal": {
+        "@type": "dct:PeriodOfTime",
+        "dcat:startDate": "1900-01-01",
+        "dcat:endDate": "2026-10-31"
+      },
+      "dct:modified": "2026-11-10",
+      "dct:license": "https://partners.example/naturalis/terms/restricted",
+      "dcat:distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "dct:license": "https://partners.example/naturalis/terms/restricted",
+          "dcat:accessURL": "https://partners.example/naturalis/access/request"
+        }
+      ],
+      "odrl:hasPolicy": {
+        "@id": "https://partners.example/naturalis/policy/sensitive-species-precise",
+        "@type": "odrl:Offer",
+        "odrl:assigner": {
+          "@id": "https://partners.example/naturalis"
+        },
+        "odrl:permission": [
+          {
+            "odrl:action": "odrl:use",
+            "odrl:constraint": [
+              {
+                "odrl:leftOperand": "odrl:purpose",
+                "odrl:operator": "odrl:isAnyOf",
+                "odrl:rightOperand": [
+                  "research",
+                  "conservation",
+                  "public-task"
+                ]
+              }
+            ],
+            "odrl:duty": [
+              {
+                "odrl:action": "odrl:obtainConsent"
+              }
+            ]
+          }
+        ],
+        "odrl:prohibition": [
+          {
+            "odrl:action": "odrl:distribute"
+          }
+        ]
+      },
+      "dct:publisher": {
+        "@id": "https://partners.example/naturalis"
+      }
+    },
+    {
+      "@id": "https://partners.example/naturalis/dataset/sensitive-species-generalised",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "sensitive-species-generalised",
+      "dct:title": "Occurrences of sensitive species, generalised to 10 km grid (mock)",
+      "dct:description": "The same records generalised to a 10 km grid, openly reusable.",
+      "dcat:keyword": [
+        "biodiversity",
+        "occurrences",
+        "sensitive species",
+        "Darwin Core",
+        "generalised"
+      ],
+      "dcat:theme": [
+        "http://publications.europa.eu/resource/authority/data-theme/ENVI"
+      ],
+      "dct:spatial": "http://publications.europa.eu/resource/authority/country/NLD",
+      "dct:temporal": {
+        "@type": "dct:PeriodOfTime",
+        "dcat:startDate": "1900-01-01",
+        "dcat:endDate": "2026-10-31"
+      },
+      "dct:modified": "2026-11-10",
+      "dct:license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "dcat:distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "dct:license": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "dcat:downloadURL": "https://partners.example/naturalis/files/generalised.zip"
+        }
+      ],
+      "odrl:hasPolicy": {
+        "@id": "https://partners.example/naturalis/policy/sensitive-species-generalised",
+        "@type": "odrl:Offer",
+        "odrl:assigner": {
+          "@id": "https://partners.example/naturalis"
+        },
+        "odrl:permission": [
+          {
+            "odrl:action": "odrl:use"
+          }
+        ]
+      },
+      "dct:publisher": {
+        "@id": "https://partners.example/naturalis"
+      }
+    }
+  ],
+  "dcat:resource": [
+    {
+      "@id": "https://partners.example/naturalis/software/sdmdl",
+      "@type": [
+        "dcat:Resource",
+        "schema:SoftwareSourceCode"
+      ],
+      "dct:identifier": "sdmdl",
+      "dct:title": "sdmdl — Species Distribution Modelling using Deep Learning",
+      "dct:description": "Python package that trains deep neural network classifiers on species occurrence records and environmental raster layers, estimates variable importance with SHAP, and produces prediction maps (GeoTIFF). Presented as an alternative to MaxEnt. Inputs: occurrence tables (WGS 84 lat/lon) and environmental rasters; outputs: per-species models, metrics, SHAP plots, maps.",
+      "dcat:keyword": [
+        "species distribution modelling",
+        "deep learning",
+        "biodiversity",
+        "occurrences",
+        "SHAP"
+      ],
+      "dcat:theme": [
+        "http://publications.europa.eu/resource/authority/data-theme/ENVI"
+      ],
+      "dct:license": "https://spdx.org/licenses/MIT",
+      "dcat:landingPage": "https://github.com/naturalis/sdmdl",
+      "schema:codeRepository": "https://github.com/naturalis/sdmdl",
+      "schema:programmingLanguage": "Python",
+      "dct:relation": [
+        "https://doi.org/10.1101/744441",
+        "https://zenodo.org/records/3460541",
+        "https://zenodo.org/records/3460530",
+        "https://zenodo.org/records/3460718"
+      ],
+      "odrl:hasPolicy": {
+        "@id": "https://partners.example/naturalis/policy/sdmdl",
+        "@type": "odrl:Offer",
+        "odrl:assigner": {
+          "@id": "https://partners.example/naturalis"
+        },
+        "odrl:permission": [
+          {
+            "odrl:action": "odrl:use",
+            "odrl:duty": [
+              {
+                "odrl:action": "odrl:attribute"
+              }
+            ]
+          }
+        ]
+      },
+      "dct:publisher": {
+        "@id": "https://partners.example/naturalis"
+      }
+    },
+    {
+      "@id": "https://partners.example/naturalis/software/ibol-europe-gaplist-app",
+      "@type": [
+        "dcat:Resource",
+        "schema:SoftwareSourceCode"
+      ],
+      "dct:identifier": "ibol-europe-gaplist-app",
+      "dct:title": "iBOL Europe / BGE gap-list app",
+      "dct:description": "Aggregates the BGE target list, synonyms, BOLD workbench exports and the public BOLD data package (COI-5P) into a normalised SQLite database. Its reports show the status of BGE barcoding activities and update the iBOL Europe target list web application. Proof of concept; the README disclaims ongoing maintenance.",
+      "dcat:keyword": [
+        "DNA barcoding",
+        "BOLD",
+        "target list",
+        "biodiversity",
+        "COI-5P"
+      ],
+      "dcat:theme": [
+        "http://publications.europa.eu/resource/authority/data-theme/ENVI"
+      ],
+      "dct:license": "https://spdx.org/licenses/MIT",
+      "dcat:landingPage": "https://github.com/bge-barcoding/ibol-europe-gaplist-app",
+      "schema:codeRepository": "https://github.com/bge-barcoding/ibol-europe-gaplist-app",
+      "schema:programmingLanguage": "Python",
+      "dct:relation": [
+        "https://species.iboleurope.org"
+      ],
+      "schema:isBasedOn": [
+        "https://boldsystems.org"
+      ],
+      "odrl:hasPolicy": {
+        "@id": "https://partners.example/naturalis/policy/ibol-europe-gaplist-app",
+        "@type": "odrl:Offer",
+        "odrl:assigner": {
+          "@id": "https://partners.example/naturalis"
+        },
+        "odrl:permission": [
+          {
+            "odrl:action": "odrl:use",
+            "odrl:duty": [
+              {
+                "odrl:action": "odrl:attribute"
+              }
+            ]
+          }
+        ]
+      },
+      "dct:publisher": {
+        "@id": "https://partners.example/naturalis"
+      }
+    }
+  ]
+}

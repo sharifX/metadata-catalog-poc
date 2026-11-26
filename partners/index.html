@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partner sites (mock)</title>
+<link rel="stylesheet" href="_shared/partner.css">
+<script src="_shared/config.js"></script>
+</head>
+<body>
+<div class="mock">Mock hosting for the demo — in reality each partner publishes on its own domain or S3 bucket</div>
+<header>
+  <div class="kicker">DigiLab demo</div>
+  <h1>Partner catalogues</h1>
+  <div class="row">Each partner publishes one file, <code>catalog.jsonld</code> (DCAT-AP + ODRL). The DigiLab catalogue harvests the registered ones.
+    <a id="cat" href="#">Open the DigiLab catalogue ↗</a></div>
+</header>
+<main class="hosting" id="list"></main>
+<script>
+const P = [
+  ["knmi", "KNMI", "Weather and climate observations"],
+  ["deltares", "Deltares", "FTO Duurzaamheid — greenhouse gas emissions"],
+  ["fair2grow", "FAIR2GROW (WUR-TNO)", "Plant growth trials"],
+  ["naturalis", "Naturalis Biodiversity Center", "Species occurrences, incl. sensitive species"],
+  ["maris", "MARIS", "Marine water quality — not registered yet, use it to demo registration"],
+];
+document.getElementById("cat").href = window.DIGILAB_CATALOGUE;
+document.getElementById("list").innerHTML = P.map(([id, name, what]) => `<section class="ds">
+  <h2><a href="${id}/">${name}</a></h2><div class="meta">${what}</div>
+  <div class="actions"><a href="${id}/">partner page</a><a href="${id}/catalog.jsonld">${id}/catalog.jsonld</a></div></section>`).join("");
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+{
+  "_note": "Example mappings only, to show the idea: catalogue keywords, themes and ODRL purpose values linked to concepts found through ontology lookup services (AgroPortal, BioPortal/EDAM, NERC Vocabulary Server, AGROVOC). In DigiLab this file is replaced by lookups against the Vocabulary Hub PoC. match = exact | close | resource (a link to a related resource, not a vocabulary term).",
+  "unmapped_search": {
+    "scheme": "AGROVOC",
+    "url": "https://agrovoc.fao.org/browse/agrovoc/en/search?clang=en&q={term}"
+  },
+  "keywords": {
+    "weather": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_15292",
+      "label": "weather",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "temperature": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_230",
+      "label": "air temperature",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "precipitation": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_6161",
+      "label": "precipitation",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "climate": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_1665",
+      "label": "climate",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "radiation": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_14415",
+      "label": "solar radiation",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "greenhouse gas": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_34841",
+      "label": "greenhouse gases",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "emissions": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_36198c2c",
+      "label": "greenhouse gas emissions",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "CO2": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_1302",
+      "label": "carbon dioxide",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "horticulture": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_3671",
+      "label": "horticulture",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "tomato": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_7805",
+      "label": "tomatoes",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "plant growth": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_08842b17",
+      "label": "plant growth",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "phenotyping": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_45113221",
+      "label": "phenotyping",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "biodiversity": {
+      "iri": "http://aims.fao.org/aos/agrovoc/c_33949",
+      "label": "biodiversity",
+      "scheme": "AGROVOC",
+      "match": "exact"
+    },
+    "occurrences": {
+      "iri": "http://rs.tdwg.org/dwc/terms/Occurrence",
+      "label": "dwc:Occurrence",
+      "scheme": "Darwin Core",
+      "match": "exact"
+    },
+    "Darwin Core": {
+      "iri": "https://dwc.tdwg.org/terms/",
+      "label": "Darwin Core terms",
+      "scheme": "TDWG",
+      "match": "exact"
+    },
+    "greenhouse climate": {
+      "iri": "https://agroportal.eu/ontologies/CGO/GreenhouseClimate",
+      "label": "Greenhouse climate",
+      "scheme": "CGO (AgroPortal)",
+      "match": "exact"
+    },
+    "DNA barcoding": {
+      "iri": "http://edamontology.org/operation_3200",
+      "label": "DNA barcoding",
+      "scheme": "EDAM",
+      "match": "exact"
+    },
+    "sensitive species": {
+      "iri": "http://edamontology.org/topic_4044",
+      "label": "Data protection",
+      "scheme": "EDAM",
+      "match": "close"
+    },
+    "BOLD": {
+      "iri": "https://boldsystems.org/",
+      "label": "BOLD Systems",
+      "scheme": "resource",
+      "match": "resource"
+    },
+    "target list": {
+      "iri": "https://species.iboleurope.org/",
+      "label": "iBOL Europe species target list",
+      "scheme": "resource",
+      "match": "resource"
+    }
+  },
+  "purposes": {
+    "research": {
+      "iri": "https://w3id.org/dpv#AcademicResearch",
+      "label": "Academic research",
+      "scheme": "DPV",
+      "match": "exact"
+    },
+    "commercial": {
+      "iri": "https://w3id.org/dpv#CommercialPurpose",
+      "label": "Commercial purpose",
+      "scheme": "DPV",
+      "match": "exact"
+    }
+  },
+  "themes": {
+    "ENVI": {
+      "iri": "http://publications.europa.eu/resource/authority/data-theme/ENVI",
+      "label": "Environment",
+      "scheme": "EU data themes",
+      "match": "exact"
+    },
+    "AGRI": {
+      "iri": "http://publications.europa.eu/resource/authority/data-theme/AGRI",
+      "label": "Agriculture, fisheries, forestry and food",
+      "scheme": "EU data themes",
+      "match": "exact"
+    },
+    "ENER": {
+      "iri": "http://publications.europa.eu/resource/authority/data-theme/ENER",
+      "label": "Energy",
+      "scheme": "EU data themes",
+      "match": "exact"
+    }
+  },
+  "lookup_services": [
+    {
+      "name": "AgroPortal",
+      "url": "https://agroportal.eu/",
+      "note": "agri-food ontologies, e.g. the Common Greenhouse Ontology (CGO)"
+    },
+    {
+      "name": "BioPortal",
+      "url": "https://bioportal.bioontology.org/",
+      "note": "biomedical and life-science ontologies, e.g. EDAM"
+    },
+    {
+      "name": "NERC Vocabulary Server",
+      "url": "https://vocab.nerc.ac.uk/",
+      "note": "marine and environmental parameters and units (used in CDIF examples)"
+    },
+    {
+      "name": "AGROVOC",
+      "url": "https://agrovoc.fao.org/",
+      "note": "FAO multilingual agricultural thesaurus"
+    }
+  ]
+}

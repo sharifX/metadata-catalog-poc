@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Standards &amp; mappings — DigiLab catalogue demo</title>
+<link rel="stylesheet" href="/static/app.css">
+<style>
+  .stack { display:grid; gap:8px; max-width:820px; margin-top:10px; }
+  .box { border:1px solid var(--line); border-radius:8px; background:#fff; padding:10px 14px; }
+  .box .box { margin-top:8px; background:var(--bg); }
+  .box b { font-size:13px; } .box code { background:#fff; }
+  .box .src { margin-top:2px; }
+</style>
+</head>
+<body>
+<nav>
+  <span class="brand">DigiLab catalogue <span style="opacity:.6;font-weight:400">demo</span></span>
+  <a href="/">Search</a>
+  <a href="/#register">Partners &amp; registration</a>
+  <a href="/standards" class="on">Standards &amp; mappings</a>
+  <a href="/docs">API</a>
+</nav>
+<div class="doc">
+  <header style="padding:20px 0 0"><h1>What this demo is built on</h1>
+    <p>Nothing here is custom: partners publish <b>DCAT-AP</b> with <b>ODRL</b> offers, the agreed minimum is a
+       <b>SHACL</b> shape, terms link to shared <b>vocabularies</b>, and the catalogue can re-serve every record as <b>CDIF</b>.</p></header>
+
+  <h2 id="structure">1 · What a partner publishes</h2>
+  <p>One JSON-LD file per partner. Organisation → datasets → distributions and access terms:</p>
+  <div class="stack"><div class="box"><b><code>dcat:Catalog</code></b> — one per partner, with <code>dct:publisher</code> (<code>foaf:Agent</code>)
+    <div class="box"><b><code>dcat:Dataset</code></b> — title, description, keywords, themes, spatial/temporal coverage, licence
+      <div class="box"><b><code>dcat:Distribution</code></b> — <code>dcat:downloadURL</code> (open) or <code>dcat:accessURL</code> (on request), media type</div>
+      <div class="box"><b><code>odrl:hasPolicy → odrl:Offer</code></b> — assigner, permissions, prohibitions
+        <div class="box"><b><code>odrl:permission / odrl:prohibition</code></b> — action (<code>use</code>, <code>distribute</code>)
+          <div class="src">→ <code>odrl:constraint</code> (purpose, spatial) · <code>odrl:duty</code> (attribute, inform, obtainConsent, compensate)</div></div></div>
+      <div class="box"><b><code>schema:variableMeasured</code></b> <span class="src">(optional)</span> — variables with units and property IDs; needed for a rich CDIF description</div>
+    </div>
+    <div class="box"><b><code>dcat:Resource</code> + <code>schema:SoftwareSourceCode</code></b> — software, listed under <code>dcat:resource</code> (DCAT 3):
+      title, description, licence, <code>schema:codeRepository</code>, language, related publications and data, and its own ODRL offer</div>
+  </div></div>
+  <p><b>DCAT stops at the asset.</b> It says what exists, who holds it and on what terms — not what is inside. The CDIF and
+     CodeMeta views below are <i>generated</i> from the same entry; partners publish only <code>catalog.jsonld</code>.
+     Rich, object-level description (e.g. an RO-Crate with files, provenance and workflows) stays with the data and can be
+     linked from a distribution.</p>
+  <p>This is the same DCAT + ODRL offer pattern that Dataspace Protocol catalogues use, so connectors could replace
+     static files later without changing the model.</p>
+
+  <h2 id="mapping">2 · Field mapping: DCAT-AP → index → CDIF</h2>
+  <table>
+    <thead><tr><th>Concept</th><th>DCAT-AP (as published)</th><th>CDIF / schema.org (generated)</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td>Title</td><td><code>dct:title</code></td><td><code>schema:name</code></td><td>search, display</td></tr>
+      <tr><td>Description</td><td><code>dct:description</code></td><td><code>schema:description</code></td><td>search; required by the minimum</td></tr>
+      <tr><td>Identifier</td><td><code>@id</code>, <code>dct:identifier</code></td><td><code>@id</code>, <code>schema:identifier</code></td><td>links, de-duplication</td></tr>
+      <tr><td>Publisher</td><td><code>dct:publisher</code> / <code>foaf:name</code></td><td><code>schema:publisher</code> (<code>schema:Organization</code>)</td><td>grouping by organisation</td></tr>
+      <tr><td>Keywords</td><td><code>dcat:keyword</code> (literals)</td><td><code>schema:keywords</code> as <code>schema:DefinedTerm</code> when mapped</td><td>search, vocabulary links</td></tr>
+      <tr><td>Theme</td><td><code>dcat:theme</code> (EU data themes)</td><td>—</td><td>display, facet</td></tr>
+      <tr><td>Spatial coverage</td><td><code>dct:spatial</code></td><td><code>schema:spatialCoverage</code></td><td>display</td></tr>
+      <tr><td>Temporal coverage</td><td><code>dct:temporal</code> / <code>dcat:startDate</code>, <code>dcat:endDate</code></td><td><code>schema:temporalCoverage</code></td><td>display</td></tr>
+      <tr><td>Last modified</td><td><code>dct:modified</code></td><td><code>schema:dateModified</code></td><td>incremental harvest (later)</td></tr>
+      <tr><td>Licence</td><td><code>dct:license</code></td><td><code>schema:license</code></td><td>required by the minimum</td></tr>
+      <tr><td>Access terms</td><td><code>odrl:hasPolicy</code> (Offer)</td><td><code>odrl:hasPolicy</code> + <code>schema:conditionsOfAccess</code> (text)</td><td>policy evaluation</td></tr>
+      <tr><td>Distribution</td><td><code>dcat:distribution</code> / <code>downloadURL</code>, <code>accessURL</code>, <code>mediaType</code></td><td><code>schema:distribution</code> (<code>schema:DataDownload</code>)</td><td>download / request link</td></tr>
+      <tr><td>Variables</td><td><code>schema:variableMeasured</code> (optional extension)</td><td><code>schema:variableMeasured</code> + <code>cdi:InstanceVariable</code>, units</td><td>CDIF data description</td></tr>
+      <tr><td>Software</td><td><code>dcat:Resource</code> + <code>schema:SoftwareSourceCode</code>, <code>schema:codeRepository</code>, <code>dct:relation</code></td><td>CodeMeta 3.0 (<code>codeRepository</code>, <code>referencePublication</code>, <code>relatedLink</code>)</td><td>software assets, CodeMeta view</td></tr>
+      <tr><td>Record metadata</td><td>catalogue IRI</td><td><code>schema:subjectOf</code> (<code>dcat:CatalogRecord</code>, <code>dcterms:conformsTo</code> CDIF 1.1)</td><td>provenance of the record</td></tr>
+    </tbody>
+  </table>
+  <p class="src">The CDIF output follows the structure of the CDIF Data Description v1.1.1 example. It is a demo crosswalk,
+     not validated against the CDIF shapes. DCAT stops at dataset level, so only datasets that describe their variables
+     get a full CDIF data description — a concrete reason CDIF matters for cross-domain reuse.</p>
+
+  <h2 id="odrl">3 · ODRL profile used for evaluation</h2>
+  <p>ODRL defines the vocabulary but no standard evaluation algorithm, so the demo uses a deliberately small profile:</p>
+  <table><tbody>
+    <tr><th>Actions</th><td><code>use</code> (covers all), <code>distribute</code></td></tr>
+    <tr><th>Constraints</th><td><code>purpose</code>, <code>spatial</code> with <code>eq</code>, <code>neq</code>, <code>isAnyOf</code>, <code>isNoneOf</code></td></tr>
+    <tr><th>Duties</th><td><code>attribute</code>, <code>inform</code>, <code>obtainConsent</code> (→ request access), <code>compensate</code></td></tr>
+    <tr><th>Outcomes</th><td>Allowed · Allowed with duties · Request access · Depends on your request · Outside the offer · Not allowed</td></tr>
+  </tbody></table>
+  <p>The catalogue <b>states</b> the terms; it does not enforce them. Enforcement is the job of connectors that negotiate on the same offer.</p>
+
+  <h2 id="governance">4 · Governance: the agreed minimum</h2>
+  <p>Every harvested catalogue is checked against a SHACL shape. Agreeing this file <i>is</i> the metadata-governance
+     conversation. Current rules: every dataset has a title, description, publisher, licence, at least one
+     distribution, and an ODRL offer with an assigner; software has a title, description, publisher, licence, code repository and an ODRL offer. <a href="/shape.ttl" target="_blank">View the shape (Turtle) ↗</a></p>
+
+  <h2 id="vocab">5 · Vocabularies</h2>
+  <p>Keywords, themes and ODRL purpose values link to concepts found through <b>ontology lookup services</b>. The links
+     in this demo are <b>examples only</b>, to show the idea; they are not curated mappings. In the demo they live in
+     <code>config/vocab.json</code>; in DigiLab they would come from the <b>Vocabulary Hub PoC</b>, which would also record
+     whether a match is exact or only close. Unmapped terms are shown with a dashed <code>?</code> link — the candidates
+     for the Vocabulary Hub to resolve.</p>
+  <p>Lookup services used for the examples: <span id="services"></span></p>
+  <p class="src">Two links are <i>related resources</i> rather than vocabulary terms (BOLD Systems, the iBOL Europe species
+     target list) — shown as <b>link</b>. One is a <i>close</i> match only (sensitive species → EDAM “Data protection”) —
+     shown as <b>≈</b>; a good example of why exact vs close matching matters.</p>
+  <table><thead><tr><th>Term</th><th>Kind</th><th>Concept</th><th>Scheme</th><th>Match</th></tr></thead><tbody id="vocabrows"></tbody></table>
+
+  <h2 id="access">6 · Access methods</h2>
+  <p><b>Harvested index</b>: catalogues are fetched on a schedule or on registration, validated, and stored as Parquet
+     (queried with DuckDB). Fast and resilient to a partner being offline, but only as fresh as the last harvest.<br>
+     <b>Live federated query</b>: every partner catalogue is fetched at query time. Always current, but slower and
+     incomplete when a partner is unavailable. Both modes run the same search and policy evaluation.</p>
+
+  <h2 id="federation">7 · Federation: what travels, what stays</h2>
+  <table><thead><tr><th>Travels between partners</th><th>Stays with the partner</th></tr></thead><tbody>
+    <tr><td>Asset descriptions (DCAT-AP)</td><td>The data and software themselves</td></tr>
+    <tr><td>Access terms (ODRL offers)</td><td>Internal catalogues and repositories (Dataverse, CKAN, …)</td></tr>
+    <tr><td>Links to shared vocabulary concepts</td><td>Rich domain metadata (RO-Crate, Darwin Core, CF, …)</td></tr>
+    <tr><td><i>Later:</i> proofs of identity — signed catalogues, credentials for requesters</td><td>The decision to grant access</td></tr>
+  </tbody></table>
+  <p class="src">This follows the federated-catalogue pattern in Beyvers et al. (2026), <i>Towards FAIR and federated data
+     ecosystems for interdisciplinary research</i>, PLoS Comput Biol 22(2): e1013806 — DCAT for discovery, ODRL for terms,
+     each participant exposing only the minimal technical metadata needed. <a href="https://doi.org/10.1371/journal.pcbi.1013806">doi ↗</a></p>
+
+  <h2 id="specs">8 · Specifications</h2>
+  <ul>
+    <li><a href="https://www.w3.org/TR/vocab-dcat-3/">W3C DCAT 3</a> and the DCAT-AP application profile</li>
+    <li><a href="https://www.w3.org/TR/odrl-model/">W3C ODRL Information Model 2.2</a> · <a href="https://www.w3.org/TR/odrl-vocab/">ODRL Vocabulary</a></li>
+    <li><a href="https://github.com/Cross-Domain-Interoperability-Framework/profile-datadescription">CDIF Data Description profile</a></li>
+    <li><a href="https://codemeta.github.io/">CodeMeta</a> (software metadata)</li>
+    <li><a href="https://www.w3.org/TR/shacl/">W3C SHACL</a></li>
+    <li>Vocabularies: <a href="https://agrovoc.fao.org/">AGROVOC</a> · <a href="https://agroportal.eu/ontologies/CGO">CGO</a> ·
+        <a href="https://edamontology.org/">EDAM</a> · <a href="https://w3id.org/dpv">DPV</a> (purposes) ·
+        <a href="http://publications.europa.eu/resource/authority/data-theme">EU data themes</a> ·
+        <a href="https://dwc.tdwg.org/">Darwin Core</a> · <a href="http://qudt.org/">QUDT</a> (units)</li>
+  </ul>
+</div>
+<script>
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+fetch("/api/vocab").then(r => r.json()).then(v => {
+  const rows = [];
+  for (const kind of ["keywords", "themes", "purposes"])
+    for (const [term, c] of Object.entries(v[kind] || {}))
+      rows.push(`<tr><td>${esc(term)}</td><td>${kind.slice(0, -1)}</td><td><a href="${esc(c.iri)}" target="_blank">${esc(c.label)} ↗</a></td><td>${esc(c.scheme)}</td><td>${esc(c.match || "exact")}</td></tr>`);
+  rows.push(`<tr><td><i>public-task, conservation, sustainability, generalised, SHAP, …</i></td><td>—</td><td class="src">not yet mapped → Vocabulary Hub</td><td></td><td></td></tr>`);
+  document.getElementById("vocabrows").innerHTML = rows.join("");
+  document.getElementById("services").innerHTML = (v.lookup_services || []).map(s =>
+    `<a href="${esc(s.url)}" target="_blank">${esc(s.name)}</a> <span class="src">(${esc(s.note)})</span>`).join(" · ");
+});
+</script>
+</body>
+</html>

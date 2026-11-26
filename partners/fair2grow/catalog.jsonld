@@ -1,0 +1,169 @@
+{
+  "@context": {
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "http://schema.org/",
+    "schema:unitCode": {
+      "@type": "@id"
+    },
+    "schema:codeRepository": {
+      "@type": "@id"
+    },
+    "dct:relation": {
+      "@type": "@id"
+    },
+    "schema:isBasedOn": {
+      "@type": "@id"
+    },
+    "dcat:resource": {
+      "@container": "@set"
+    },
+    "schema:propertyID": {
+      "@type": "@id"
+    },
+    "dcat:dataset": {
+      "@container": "@set"
+    },
+    "dcat:theme": {
+      "@type": "@id"
+    },
+    "dct:spatial": {
+      "@type": "@id"
+    },
+    "dct:license": {
+      "@type": "@id"
+    },
+    "dcat:landingPage": {
+      "@type": "@id"
+    },
+    "dcat:downloadURL": {
+      "@type": "@id"
+    },
+    "dcat:accessURL": {
+      "@type": "@id"
+    },
+    "dct:conformsTo": {
+      "@type": "@id"
+    },
+    "odrl:action": {
+      "@type": "@id"
+    },
+    "odrl:leftOperand": {
+      "@type": "@id"
+    },
+    "odrl:operator": {
+      "@type": "@id"
+    },
+    "dct:modified": {
+      "@type": "xsd:date"
+    },
+    "dcat:startDate": {
+      "@type": "xsd:date"
+    },
+    "dcat:endDate": {
+      "@type": "xsd:date"
+    }
+  },
+  "@id": "https://partners.example/fair2grow/catalog",
+  "@type": "dcat:Catalog",
+  "dct:title": "FAIR2GROW (WUR-TNO) data catalogue (mock)",
+  "dct:publisher": {
+    "@id": "https://partners.example/fair2grow",
+    "@type": "foaf:Agent",
+    "foaf:name": "FAIR2GROW (WUR-TNO)"
+  },
+  "dcat:dataset": [
+    {
+      "@id": "https://partners.example/fair2grow/dataset/dwarf-tomato-trial",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "dwarf-tomato-trial",
+      "dct:title": "Dwarf tomato growth trial (placeholder for the 4TU.ResearchData dataset)",
+      "dct:description": "Plant height, leaf count and fruit set of dwarf tomato under controlled light regimes. Replace with the real 4TU record and DOI.",
+      "dcat:keyword": [
+        "tomato",
+        "plant growth",
+        "horticulture",
+        "phenotyping"
+      ],
+      "dcat:theme": [
+        "http://publications.europa.eu/resource/authority/data-theme/AGRI"
+      ],
+      "dct:spatial": "http://publications.europa.eu/resource/authority/country/NLD",
+      "dct:temporal": {
+        "@type": "dct:PeriodOfTime",
+        "dcat:startDate": "2023-03-01",
+        "dcat:endDate": "2023-09-30"
+      },
+      "dct:modified": "2024-02-10",
+      "dct:license": "https://creativecommons.org/licenses/by/4.0/",
+      "dcat:distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "dct:license": "https://creativecommons.org/licenses/by/4.0/",
+          "dcat:mediaType": {
+            "@id": "https://www.iana.org/assignments/media-types/text/csv"
+          },
+          "dcat:downloadURL": "https://partners.example/fair2grow/files/dwarf-tomato.csv"
+        }
+      ],
+      "schema:variableMeasured": [
+        {
+          "@type": "schema:PropertyValue",
+          "schema:name": "plant_id",
+          "schema:description": "Plant identifier"
+        },
+        {
+          "@type": "schema:PropertyValue",
+          "schema:name": "light_regime",
+          "schema:description": "Light treatment applied"
+        },
+        {
+          "@type": "schema:PropertyValue",
+          "schema:name": "plant_height",
+          "schema:description": "Plant height at measurement date",
+          "schema:unitCode": "http://qudt.org/vocab/unit/CentiM",
+          "schema:propertyID": "http://aims.fao.org/aos/agrovoc/c_08842b17"
+        },
+        {
+          "@type": "schema:PropertyValue",
+          "schema:name": "fruit_set",
+          "schema:description": "Number of fruits set per plant",
+          "schema:unitCode": "http://qudt.org/vocab/unit/NUM"
+        }
+      ],
+      "odrl:hasPolicy": {
+        "@id": "https://partners.example/fair2grow/policy/dwarf-tomato-trial",
+        "@type": "odrl:Offer",
+        "odrl:assigner": {
+          "@id": "https://partners.example/fair2grow"
+        },
+        "odrl:permission": [
+          {
+            "odrl:action": "odrl:use",
+            "odrl:constraint": [
+              {
+                "odrl:leftOperand": "odrl:spatial",
+                "odrl:operator": "odrl:isAnyOf",
+                "odrl:rightOperand": [
+                  "NL",
+                  "EU"
+                ]
+              }
+            ],
+            "odrl:duty": [
+              {
+                "odrl:action": "odrl:attribute"
+              }
+            ]
+          }
+        ]
+      },
+      "dct:publisher": {
+        "@id": "https://partners.example/fair2grow"
+      }
+    }
+  ]
+}

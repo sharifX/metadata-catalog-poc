@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DigiLab catalogue demo — DCAT + ODRL</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<nav>
+  <span class="brand">DigiLab catalogue <span style="opacity:.6;font-weight:400">demo</span></span>
+  <a href="/" class="on">Search</a>
+  <a href="#register">Partners &amp; registration</a>
+  <a href="/standards">Standards &amp; mappings</a>
+  <a href="/docs">API</a>
+  <a id="hosting" href="#">Partner sites ↗</a>
+</nav>
+<header>
+  <h1>Find data across different organisations and see what you may do with it</h1>
+  <p>Partners each publish a DCAT-AP catalogue with ODRL access terms. This catalogue harvests them and checks them
+     against the agreed minimum.</p>
+  <p class="mock"><b>All partner data is mock.</b></p>
+</header>
+<details class="explain" open>
+  <summary>How this works</summary>
+  <div class="tiles">
+    <div class="tile"><div class="q">What exists</div><h3>Catalogue · DCAT-AP</h3>
+      <p>Each partner publishes one file, <code>catalog.jsonld</code>: a <code>dcat:Catalog</code> listing its datasets
+         (and software as <code>dcat:Resource</code>). DCAT describes assets <b>at dataset level</b> — who, what, when, where,
+         licence, where to get it — not what is inside them.</p></div>
+    <div class="tile"><div class="q">What you may do</div><h3>Access terms · ODRL</h3>
+      <p>Every asset carries a machine-readable <b>offer</b>: permissions, prohibitions, constraints (purpose, place of use)
+         and duties. The catalogue evaluates it against your request. It <b>states</b> the terms; enforcing them is
+         a connector's job.</p></div>
+    <div class="tile"><div class="q">What's inside</div><h3>Detailed views · CDIF, CodeMeta</h3>
+      <p>Generated from the same record, not published separately: <b>CDIF</b> for data (variables, units) and
+         <b>CodeMeta</b> for software. Richer domain metadata (e.g. RO-Crate packages, Darwin Core) stays with the partner
+         and is linked, not copied.</p></div>
+    <div class="tile"><div class="q">What we agree on</div><h3>Minimum · SHACL + vocabularies</h3>
+      <p>A small shape every catalogue must meet, and shared terms: keywords and purposes link to concepts found via
+         ontology lookup services (AgroPortal, BioPortal/EDAM, NERC Vocabulary Server, AGROVOC) — later via the DigiLab
+         Vocabulary Hub. <i>The linked terms are examples only.</i></p></div>
+  </div>
+  <p class="fed"><b>Federation:</b> metadata, access terms and (later) proofs of identity travel between partners; <b>the data
+     stays where it is</b>. Each partner keeps its own systems and richer metadata — DigiLab only agrees the envelope.
+     <a href="/standards">Standards &amp; mappings →</a></p>
+</details>
+<form class="search" id="f">
+  <label>Search<input name="q" placeholder="e.g. horticulture, greenhouse, species"></label>
+  <label>Asset type
+    <select name="type"><option value="">all</option><option value="dataset">datasets</option><option value="software">software</option></select></label>
+  <label>Intended purpose
+    <select name="purpose">
+      <option value="">(not stated)</option><option value="research" selected>research</option>
+      <option value="commercial">commercial</option><option value="public-task">public task</option>
+      <option value="conservation">conservation</option>
+    </select></label>
+  <label>Where used
+    <select name="spatial"><option value="">(not stated)</option><option value="NL" selected>NL</option>
+      <option value="EU">EU</option><option value="non-EU">outside EU</option></select></label>
+  <input type="hidden" name="dataset"><input type="hidden" name="source">
+  <button class="primary">Search</button>
+  <details class="adv" id="adv"><summary>Advanced options</summary><div class="advrow">
+    <label>Action
+      <select name="action"><option>use</option><option>distribute</option></select></label>
+    <label>Access method
+      <select name="mode"><option value="index">harvested index</option><option value="live">live federated query</option></select></label>
+    <label class="check"><input type="checkbox" name="only_conformant"> only conformant metadata</label>
+  </div></details>
+</form>
+<p class="vocabnote">Keyword links are <b>examples</b> of ontology lookup — AgroPortal (e.g. Common Greenhouse Ontology),
+  BioPortal (EDAM), NERC Vocabulary Server, AGROVOC — not curated mappings. <span class="leg"><b>≈</b> close match ·
+  <b>link</b> related resource, not a vocabulary term · <b>?</b> not yet mapped (Vocabulary Hub candidate)</span>
+  <a href="/standards#vocab">more</a></p>
+<div id="meta"></div>
+<div id="results"></div>
+
+<section class="panel" id="register">
+  <h2>Partners &amp; registration</h2>
+  <div class="src">Catalogues this index harvests. Adding a partner = registering the URL of its <code>catalog.jsonld</code>;
+    it is checked against the <a href="/standards#governance">agreed minimum</a> and harvested straight away.</div>
+  <table><thead><tr><th>Partner</th><th>Catalogue</th><th>Added via</th><th>Assets</th><th>Below minimum</th><th></th></tr></thead>
+    <tbody id="sources"></tbody></table>
+  <form class="regform" id="reg">
+    <label>Catalogue URL<input name="url" required placeholder="http://localhost:8080/maris/catalog.jsonld"></label>
+    <label>Display name<input name="name" placeholder="MARIS"></label>
+    <button class="primary">Register &amp; harvest</button>
+  </form>
+  <div id="regresult"></div>
+</section>
+
+<dialog id="viewer">
+  <header><div><h2 id="vtitle"></h2><div class="sub" id="vsub"></div></div>
+    <div style="display:flex;gap:12px;align-items:center"><a id="vraw" target="_blank">open raw ↗</a>
+      <button class="link" id="vcopy">copy</button><button id="vclose">Close</button></div></header>
+  <pre id="vbody"></pre>
+</dialog>
+
+<script>
+const LABEL = { allowed:"Allowed", allowed_with_duties:"Allowed, with duties", request_access:"Request access",
+  conditional:"Depends on your request", prohibited:"Not allowed", not_permitted:"Outside the offer" };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const f = document.getElementById("f");
+const F = n => f.elements[n];  // avoid clashes between field names and form properties (action, dataset)
+let VOCAB = { purposes: {} }, LAST = [];
+
+// ---- URL <-> form ----
+const url = new URLSearchParams(location.search);
+for (const k of ["q", "type", "purpose", "spatial", "action", "mode", "dataset", "source"]) if (url.has(k)) F(k).value = url.get(k);
+if (url.get("only_conformant") === "true") F("only_conformant").checked = true;
+if ((url.get("action") || "use") !== "use" || (url.get("mode") || "index") !== "index" || url.has("only_conformant")) document.getElementById("adv").open = true;
+
+function purposeLink(v) {
+  const c = VOCAB.purposes[v];
+  return c ? `<a href="${esc(c.iri)}" target="_blank" title="${esc(c.scheme)}: ${esc(c.label)}">${esc(v)}</a>`
+           : `<span title="No public concept mapped yet — Vocabulary Hub candidate" style="border-bottom:1px dashed">${esc(v)}</span>`;
+}
+function tree(p) {
+  if (!p) return "<i>No policy published</i>";
+  const rule = (r, kind) => {
+    const cons = r.constraints.map(c => `<li>${esc(c.leftOperand)} <i>${esc(c.operator)}</i> ${
+      c.rightOperand.map(v => c.leftOperand === "purpose" ? purposeLink(v) : esc(v)).join(", ")}</li>`).join("");
+    const duties = r.duties.map(d => `<li>duty: ${esc(d)}</li>`).join("");
+    return `<div class="rule ${kind}"><b>${kind === "perm" ? "permission" : "prohibition"}</b>: ${esc(r.action)}${cons || duties ? `<ul>${cons}${duties}</ul>` : ""}</div>`;
+  };
+  return `<div class="tree"><div>odrl:${esc(p.type)} <code>${esc(p.uid)}</code></div>
+    ${p.permissions.map(r => rule(r, "perm")).join("")}${p.prohibitions.map(r => rule(r, "proh")).join("")}</div>`;
+}
+function odrl(d) {
+  if (!d.policy) return `<div class="lbl">Access terms (ODRL offer)</div><i>No policy published</i>`;
+  return `<div class="lbl">Access terms (ODRL offer)</div>${tree(d.policy)}
+    <details class="raw"><summary>ODRL (JSON)</summary><pre>${esc(JSON.stringify(d.policy_jsonld, null, 2))}</pre></details>`;
+}
+function tag(k) {
+  const m = k.mapped ? (k.match || "exact") : "none";
+  const title = { exact: `${k.scheme}: ${k.label}`, close: `Close match only — ${k.scheme}: ${k.label}`,
+                  resource: `Related resource (not a vocabulary term): ${k.label}`,
+                  none: `Not yet mapped — search ${k.scheme} (Vocabulary Hub candidate)` }[m];
+  const text = { exact: esc(k.scheme), close: `≈ ${esc(k.scheme)}`, resource: "link", none: "?" }[m];
+  return `<span class="tag m-${m}"><button type="button" data-kw="${esc(k.term)}" title="Find everything with this keyword">${esc(k.term)}</button><a href="${esc(k.iri)}" target="_blank" title="${esc(title)}">${text} ↗</a></span>`;
+}
+function card(d, i) {
+  const e = d.evaluation, sw = d.asset_type === "software";
+  const link = sw ? d.code_repository : (d.download_url || d.access_url);
+  const linkText = sw ? "repository" : d.download_url ? "download" : "access / request";
+  const themes = d.themes.map(t => t.mapped ? `<a href="${esc(t.iri)}" target="_blank" title="EU data theme">${esc(t.label)}</a>` : esc(t.term)).join(", ");
+  const vars = d.variables.length ? `<div class="lbl">Variables</div><div class="vars">${d.variables.map(v => esc(v.name)).join(" · ")}</div>` : "";
+  const host = u => { try { return new URL(u).hostname.replace("www.", ""); } catch { return u; } };
+  const rel = [...d.related, ...d.based_on].length ? `<div class="lbl">Related</div><div class="vars">${
+    d.related.map(u => `<a href="${esc(u)}" target="_blank">${esc(u.startsWith("https://doi.org/") ? "doi:" + u.slice(16) : host(u) + (u.includes("/records/") ? " " + u.split("/").pop() : ""))} ↗</a>`).join(" · ")}${
+    d.based_on.map(u => ` · based on <a href="${esc(u)}" target="_blank">${esc(host(u))} ↗</a>`).join("")}</div>` : "";
+  const src = sw ? `<span class="kind sw">Software</span> ${esc(d.programming_language)} · <a href="${esc(d.code_repository)}" target="_blank">${esc(d.code_repository.replace("https://", ""))}</a> · ${themes}`
+                 : `<span class="kind">Dataset</span> ${themes} · ${esc(d.spatial)} · ${esc(d.temporal_start)} – ${esc(d.temporal_end)} · modified ${esc(d.modified)}`;
+  return `<div class="ds"><div>
+    <div class="src">${src}</div>
+    <h3>${esc(d.title)}</h3>
+    <div class="desc">${esc(d.description) || "<i>No description</i>"}</div>
+    <div class="tags">${d.keywords.map(tag).join("")}</div>
+    ${d.conforms ? "" : `<div class="flag">Below agreed minimum: ${esc(d.conformance_issues.join("; "))}</div>`}
+    ${vars}${rel}
+    ${odrl(d)}
+    <div class="rep"><span class="src">View as:</span>
+      <button class="link" data-rep="dcat" data-i="${i}">DCAT-AP (as published)</button>
+      ${sw ? `<button class="link" data-rep="codemeta" data-i="${i}">CodeMeta</button>`
+           : `<button class="link" data-rep="cdif" data-i="${i}">CDIF${d.variables.length ? "" : " (dataset level only)"}</button>`}
+      <button class="link" data-rep="json" data-i="${i}">API record</button>
+    </div></div>
+    <div class="verdict ${e.status}"><b>${LABEL[e.status]}</b>${esc(e.reason)}
+      ${e.duties.length ? `<ul>${e.duties.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+      ${link ? `<div style="margin-top:6px"><a href="${esc(link)}" target="_blank">${linkText} ↗</a></div>` : ""}
+    </div></div>`;
+}
+
+async function run(ev) {
+  ev && ev.preventDefault();
+  const p = new URLSearchParams(new FormData(f));
+  for (const [k, v] of [...p]) if (!v) p.delete(k);
+  if (F("only_conformant").checked) p.set("only_conformant", "true"); else p.delete("only_conformant");
+  history.replaceState(null, "", "?" + p);
+  const r = await (await fetch("/api/search?" + p)).json();
+  LAST = r.results;
+  const chips = [["dataset", "one dataset"], ["source", `partner: ${F("source").value}`]].filter(([k]) => F(k).value)
+    .map(([k, l]) => `<span class="chip">${esc(l)}<button data-clear="${k}" title="clear">×</button></span>`).join("");
+  const down = r.unavailable_sources.length ? ` · <span class="bad">unavailable: ${r.unavailable_sources.map(e => esc(e.source)).join(", ")}</span>` : "";
+  document.getElementById("meta").innerHTML =
+    `${r.count} asset${r.count === 1 ? "" : "s"} · ${r.mode === "index" ? "harvested index" : "live federated query"} · ${r.elapsed_ms} ms${down} ${chips}`;
+  const groups = {};
+  r.results.forEach((d, i) => (groups[d.source] ??= { d, items: [] }).items.push(card(d, i)));
+  document.getElementById("results").innerHTML = Object.values(groups).map(({ d, items }) => `<div class="org">
+    <div class="orghead"><h2>${esc(d.publisher)}</h2>
+      <a href="${esc(d.page_url)}" target="_blank">partner page ↗</a>
+      <a href="${esc(d.catalogue_url)}" target="_blank">catalogue (DCAT) ↗</a>
+      <span class="src">${items.length} matching asset${items.length > 1 ? "s" : ""}</span></div>
+    ${items.join("")}</div>`).join("") || `<div class="src">Nothing matches.</div>`;
+}
+
+// ---- representation viewer ----
+const dlg = document.getElementById("viewer");
+async function show(kind, d) {
+  const api = { dcat: `/api/dataset/dcat?id=`, cdif: `/api/dataset/cdif?id=`, codemeta: `/api/dataset/codemeta?id=`, json: `/api/dataset?id=` }[kind] + encodeURIComponent(d.id);
+  const sub = { dcat: "DCAT-AP 3 + ODRL 2.2 — this asset's entry, cut from the partner's catalog.jsonld exactly as published",
+                cdif: "CDIF Data Description 1.1 (schema.org) — generated by this catalogue from the DCAT record",
+                codemeta: "CodeMeta 3.0 (schema.org SoftwareSourceCode) — generated by this catalogue from the DCAT record",
+                json: "Flattened record as stored in the harvested index (DuckDB/Parquet)" }[kind];
+  document.getElementById("vtitle").textContent = `${{ dcat: "DCAT-AP", cdif: "CDIF", codemeta: "CodeMeta", json: "API record" }[kind]} — ${d.title}`;
+  document.getElementById("vsub").textContent = sub;
+  document.getElementById("vraw").href = api;
+  document.getElementById("vbody").textContent = "loading…";
+  dlg.showModal();
+  const res = await fetch(api);
+  document.getElementById("vbody").textContent = res.ok ? JSON.stringify(await res.json(), null, 2)
+    : "Not in the harvested index — switch back to the harvested index to view representations.";
+}
+document.getElementById("vclose").onclick = () => dlg.close();
+document.getElementById("vcopy").onclick = () => navigator.clipboard.writeText(document.getElementById("vbody").textContent);
+
+document.addEventListener("click", ev => {
+  const t = ev.target;
+  if (t.dataset.kw) { F("q").value = t.dataset.kw; F("dataset").value = ""; F("source").value = ""; run(); scrollTo({ top: 0, behavior: "smooth" }); }
+  if (t.dataset.rep) show(t.dataset.rep, LAST[+t.dataset.i]);
+  if (t.dataset.clear) { F(t.dataset.clear).value = ""; run(); }
+  if (t.dataset.remove) fetch(`/api/sources/${t.dataset.remove}`, { method: "DELETE" }).then(() => { loadSources(); run(); });
+});
+f.addEventListener("submit", run);
+f.addEventListener("change", () => run());
+
+// ---- partners & registration ----
+async function loadSources() {
+  const s = await (await fetch("/api/sources")).json();
+  document.getElementById("hosting").href = s.partner_hosting;
+  const rep = Object.fromEntries((s.last_harvest?.sources || []).map(r => [r.source, r]));
+  document.getElementById("sources").innerHTML = s.sources.map(x => {
+    const r = rep[x.id] || {};
+    return `<tr><td><a href="${esc(x.page_url)}" target="_blank">${esc(x.name)}</a></td>
+      <td><a href="${esc(x.catalogue_url)}" target="_blank"><code>${esc(x.catalogue_url)}</code></a></td>
+      <td>${x.origin === "config" ? "config file" : "registration"}</td>
+      <td>${r.ok === false ? `<span class="bad">unreachable</span>` : (r.datasets ?? "–")}</td>
+      <td>${r.nonconformant ? `<span class="bad" title="${esc(Object.entries(r.issues).map(([t, i]) => t + ": " + i.join("; ")).join("\n"))}">${r.nonconformant}</span>` : (r.ok ? "0" : "–")}</td>
+      <td>${x.origin === "registered" ? `<button class="link" data-remove="${esc(x.id)}">remove</button>` : ""}</td></tr>`;
+  }).join("");
+}
+document.getElementById("reg").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const out = document.getElementById("regresult");
+  out.textContent = "Fetching, checking against the agreed minimum, harvesting…";
+  const body = Object.fromEntries(new FormData(ev.target));
+  const res = await fetch("/api/sources", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await res.json();
+  if (!res.ok) { out.innerHTML = `<span class="bad">${esc(j.detail)}</span>`; return; }
+  const r = j.registered;
+  out.innerHTML = `<span class="ok">Registered ${esc(r.name)}: ${r.datasets} asset(s) harvested, ${r.nonconformant} below the agreed minimum.</span>
+    <a href="?source=${encodeURIComponent(r.source)}">Show its datasets</a>`;
+  ev.target.reset(); loadSources(); run();
+});
+
+fetch("/api/vocab").then(r => r.json()).then(v => { VOCAB = v; run(); });
+loadSources();
+</script>
+</body>
+</html>

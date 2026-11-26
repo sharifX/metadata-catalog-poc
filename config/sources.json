@@ -1,0 +1,6 @@
+[
+  {"id": "knmi",      "name": "KNMI (mock)",               "url": "{PARTNER_BASE}/knmi/catalog.jsonld"},
+  {"id": "deltares",  "name": "Deltares (mock)",           "url": "{PARTNER_BASE}/deltares/catalog.jsonld"},
+  {"id": "fair2grow", "name": "FAIR2GROW WUR-TNO (mock)",  "url": "{PARTNER_BASE}/fair2grow/catalog.jsonld"},
+  {"id": "naturalis", "name": "Naturalis (mock)",          "url": "{PARTNER_BASE}/naturalis/catalog.jsonld"}
+]

@@ -1,0 +1,206 @@
+{
+  "@context": {
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "http://schema.org/",
+    "schema:unitCode": {
+      "@type": "@id"
+    },
+    "schema:codeRepository": {
+      "@type": "@id"
+    },
+    "dct:relation": {
+      "@type": "@id"
+    },
+    "schema:isBasedOn": {
+      "@type": "@id"
+    },
+    "dcat:resource": {
+      "@container": "@set"
+    },
+    "schema:propertyID": {
+      "@type": "@id"
+    },
+    "dcat:dataset": {
+      "@container": "@set"
+    },
+    "dcat:theme": {
+      "@type": "@id"
+    },
+    "dct:spatial": {
+      "@type": "@id"
+    },
+    "dct:license": {
+      "@type": "@id"
+    },
+    "dcat:landingPage": {
+      "@type": "@id"
+    },
+    "dcat:downloadURL": {
+      "@type": "@id"
+    },
+    "dcat:accessURL": {
+      "@type": "@id"
+    },
+    "dct:conformsTo": {
+      "@type": "@id"
+    },
+    "odrl:action": {
+      "@type": "@id"
+    },
+    "odrl:leftOperand": {
+      "@type": "@id"
+    },
+    "odrl:operator": {
+      "@type": "@id"
+    },
+    "dct:modified": {
+      "@type": "xsd:date"
+    },
+    "dcat:startDate": {
+      "@type": "xsd:date"
+    },
+    "dcat:endDate": {
+      "@type": "xsd:date"
+    }
+  },
+  "@id": "https://partners.example/knmi/catalog",
+  "@type": "dcat:Catalog",
+  "dct:title": "KNMI data catalogue (mock)",
+  "dct:publisher": {
+    "@id": "https://partners.example/knmi",
+    "@type": "foaf:Agent",
+    "foaf:name": "KNMI"
+  },
+  "dcat:dataset": [
+    {
+      "@id": "https://partners.example/knmi/dataset/daily-weather-obs",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "daily-weather-obs",
+      "dct:title": "Daily weather observations, Dutch stations (mock)",
+      "dct:description": "Daily temperature, precipitation, wind and sunshine for KNMI stations. Useful as greenhouse climate and crop model input.",
+      "dcat:keyword": [
+        "weather",
+        "temperature",
+        "precipitation",
+        "climate",
+        "greenhouse climate"
+      ],
+      "dcat:theme": [
+        "http://publications.europa.eu/resource/authority/data-theme/ENVI"
+      ],
+      "dct:spatial": "http://publications.europa.eu/resource/authority/country/NLD",
+      "dct:temporal": {
+        "@type": "dct:PeriodOfTime",
+        "dcat:startDate": "1990-01-01",
+        "dcat:endDate": "2026-10-31"
+      },
+      "dct:modified": "2026-11-01",
+      "dct:license": "https://creativecommons.org/licenses/by/4.0/",
+      "dcat:distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "dct:license": "https://creativecommons.org/licenses/by/4.0/",
+          "dcat:mediaType": {
+            "@id": "https://www.iana.org/assignments/media-types/application/vnd.apache.parquet"
+          },
+          "dcat:downloadURL": "https://partners.example/knmi/files/daily-obs.parquet"
+        }
+      ],
+      "schema:variableMeasured": [
+        {
+          "@type": "schema:PropertyValue",
+          "schema:name": "station_id",
+          "schema:description": "KNMI station identifier"
+        },
+        {
+          "@type": "schema:PropertyValue",
+          "schema:name": "date",
+          "schema:description": "Observation date"
+        },
+        {
+          "@type": "schema:PropertyValue",
+          "schema:name": "tg",
+          "schema:description": "Daily mean air temperature",
+          "schema:unitCode": "http://qudt.org/vocab/unit/DEG_C",
+          "schema:propertyID": "http://aims.fao.org/aos/agrovoc/c_230"
+        },
+        {
+          "@type": "schema:PropertyValue",
+          "schema:name": "rh",
+          "schema:description": "Daily precipitation amount",
+          "schema:unitCode": "http://qudt.org/vocab/unit/MilliM",
+          "schema:propertyID": "http://aims.fao.org/aos/agrovoc/c_6161"
+        }
+      ],
+      "odrl:hasPolicy": {
+        "@id": "https://partners.example/knmi/policy/daily-weather-obs",
+        "@type": "odrl:Offer",
+        "odrl:assigner": {
+          "@id": "https://partners.example/knmi"
+        },
+        "odrl:permission": [
+          {
+            "odrl:action": "odrl:use",
+            "odrl:duty": [
+              {
+                "odrl:action": "odrl:attribute"
+              }
+            ]
+          }
+        ]
+      },
+      "dct:publisher": {
+        "@id": "https://partners.example/knmi"
+      }
+    },
+    {
+      "@id": "https://partners.example/knmi/dataset/global-radiation-hourly",
+      "@type": "dcat:Dataset",
+      "dct:identifier": "global-radiation-hourly",
+      "dct:title": "Hourly global radiation (mock)",
+      "dcat:keyword": [
+        "radiation",
+        "solar",
+        "climate"
+      ],
+      "dcat:theme": [
+        "http://publications.europa.eu/resource/authority/data-theme/ENVI",
+        "http://publications.europa.eu/resource/authority/data-theme/ENER"
+      ],
+      "dct:spatial": "http://publications.europa.eu/resource/authority/country/NLD",
+      "dct:temporal": {
+        "@type": "dct:PeriodOfTime",
+        "dcat:startDate": "2000-01-01",
+        "dcat:endDate": "2026-10-31"
+      },
+      "dct:modified": "2026-11-01",
+      "dct:license": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "dcat:distribution": [
+        {
+          "@type": "dcat:Distribution",
+          "dct:license": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "dcat:downloadURL": "https://partners.example/knmi/files/radiation.parquet"
+        }
+      ],
+      "odrl:hasPolicy": {
+        "@id": "https://partners.example/knmi/policy/global-radiation-hourly",
+        "@type": "odrl:Offer",
+        "odrl:assigner": {
+          "@id": "https://partners.example/knmi"
+        },
+        "odrl:permission": [
+          {
+            "odrl:action": "odrl:use"
+          }
+        ]
+      },
+      "dct:publisher": {
+        "@id": "https://partners.example/knmi"
+      }
+    }
+  ]
+}
